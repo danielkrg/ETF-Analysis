@@ -1,5 +1,5 @@
 import './App.css';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect} from 'react';
 import Papa from 'papaparse';
 import  { Line, Bar } from 'react-chartjs-2';
 import { 
@@ -13,7 +13,6 @@ import {
   Tooltip
 } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import timeCSV from './CSV/timeData.csv?raw';
 
 ChartJS.register(
   LineElement,
@@ -110,8 +109,17 @@ function App() {
     },
   }
   const [weightData, setWeightData] = useState([])
-  const timeData = Papa.parse(timeCSV, { header: true, skipEmptyLines: true})
+  const [timeData, setTimeData] = useState([])
   const [fileName, setFileName] = useState("");
+
+  useEffect(() => {
+    fetch('http://localhost:5001/static/timeData.csv')
+      .then((res) => res.text())
+      .then((csvText) => {
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true});
+        setTimeData(parsed);
+      });
+  }, []);
 
   const processData = (weights) => {
     const lineLabels = []
@@ -148,7 +156,6 @@ function App() {
       datasets: [{
         label: "ETF Price",
         data: lineData,
-        fill: false,
         borderColor: "rgb(75, 192, 192)",
       }]
     })
@@ -176,7 +183,6 @@ function App() {
   }
 
   const lineRef = useRef(null);
-
   const handleResetZoom = () => {
     if (lineRef && lineRef.current) {
       lineRef.current.resetZoom();
@@ -184,7 +190,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col w-screen min-h-screen justify-center items-center bg-amber-50">
+    <div className="flex flex-col w-screen min-h-screen justify-center items-center bg-stone-100">
       {weightData.length ? (
         <div className="absolute top-0 right-5">
           <p className="text-black pt-5">Current File: {fileName}</p>
