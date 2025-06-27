@@ -1,43 +1,59 @@
 import './App.css';
 import { useState } from 'react';
 import Papa from 'papaparse';
-import  { Line } from 'react-chartjs-2';
+import  { Line, Bar } from 'react-chartjs-2';
 import { 
   Chart as ChartJS,
   LineElement,
-  CategoryScale, // x-axis
-  LinearScale, // y-axis
-  PointElement
+  BarElement,
+  CategoryScale, 
+  LinearScale, 
+  PointElement,
+
 } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import timeCSV from './CSV/timeData.csv?raw';
 
 ChartJS.register(
   LineElement,
+  BarElement,
   CategoryScale,
   LinearScale,
-  PointElement
+  PointElement,
+  zoomPlugin
 )
 
 function App() {
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [{
-      label: "",
-      data: []
-    }]
-  })
-
-  const [weightData, setWeightData] = useState([])
-  const timeData = Papa.parse(timeCSV, { header: true })
-  const options = {
+  const [lineChartData, setLineChartData] = useState(null)
+  const [barChartData, setBarChartData] = useState(null)
+  const lineChartOptions = {
     plugins: {
-      legend: true
+      zoom: {
+        pan: {
+          enabled: true,
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true
+          },
+        }
+      }
     }
   }
+  const barChartOptions = {
+
+  }
+  const [weightData, setWeightData] = useState([])
+  const timeData = Papa.parse(timeCSV, { header: true })
 
   const processData = (weights) => {
-    const labels = []
-    const data = []
+    const lineLabels = []
+    const lineData = []
+    const barLabels = []
+    const barData = []
     timeData.data.forEach((row) => {
       if (row.DATE != "") {
         var value = 0
@@ -46,18 +62,43 @@ function App() {
             value += parseFloat(constituent.weight) * parseFloat(row[constituent.name])
           }
         })
-        labels.push(row.DATE)
-        data.push(value)
+        lineLabels.push(row.DATE)
+        lineData.push(value)
       }
     })
-    console.log(labels)
-    console.log(data)
-    setChartData({
-      labels: labels,
+    weights.forEach((constituent) => {
+      var value = parseFloat(constituent.weight) * parseFloat(timeData.data.at(-2)[constituent.name])
+      if (barData.length != 5) {
+        barData.push(value)
+        barLabels.push(constituent.name)
+      }
+      else {
+        var minVal = Math.min(...barData)
+        var minIdx = barData.indexOf(minVal)
+        if (value > minVal) {
+          barData.splice(minIdx, 1)
+          barLabels.splice(minIdx, 1)
+          barData.push(value)
+          barLabels.push(constituent.name)
+        }
+      }
+    })
+    setLineChartData({
+      labels: lineLabels,
       datasets: [{
         label: "ETF Price",
-        data: data,
-        backgroundColor: "aqua"
+        data: lineData,
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+      }]
+    })
+    setBarChartData({
+      labels: barLabels,
+      datasets: [{
+        label: "Top 5 ETF Holdings",
+        data: barData,
+        backgroundColor: 'rgb(75, 192, 192)',
       }]
     })
   }
@@ -98,9 +139,13 @@ function App() {
             </tbody>
           </table>
           <Line
-            data = {chartData}
-            options = {options}>
+            data = {lineChartData}
+            options = {lineChartOptions}>
           </Line>
+          <Bar
+            data = {barChartData}
+            options = {barChartOptions}>
+          </Bar>
         </div>
       ) : null}
     </div>
