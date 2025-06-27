@@ -44,3 +44,4 @@ npm run dev
 cd server
 npm run dev
 ```
+4. Navigate to localhost:3000
