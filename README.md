@@ -23,9 +23,9 @@ which is located on a different port.
 
 The frontend was built with React using Vite for a simpler setup and faster web development. 
 CSV file parsing was done asynchronously with papaparse. 
-Chart generation was done client side with Chart.js with the React integration and a Chart.js plugin to allow for zooming and panning.
+Chart generation was done client side with Chart.js using the React integration and a Chart.js plugin to allow for zooming and panning.
 
-### To run:
+### To Run:
 
 1. Install Dependencies:
 ```bash
@@ -45,3 +45,7 @@ cd server
 npm run dev
 ```
 4. Navigate to localhost:3000
+
+### Future Features:
+
+To expand this projects functionality I would add the option to add and manage multiple ETF files. Using a database I would store the data read from csv files and allow the user to select multiple ETFs to view on a single chart. The user would also be able to view up to date information without having to re-upload the csv file whenever prices.csv is updated on the server. I would also add the ability to filter the price data displayed using specific time periods, and to export charts as PNGs.   
