@@ -188,6 +188,16 @@ function App() {
       lineRef.current.resetZoom();
     }
   };
+  const handleZoom = (dir) => {
+    if (lineRef && lineRef.current) {
+      if (dir == 'in') {
+        lineRef.current.zoom(1.15);
+      }
+      else {
+        lineRef.current.zoom(0.85);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col w-screen min-h-screen justify-center items-center bg-stone-100">
@@ -198,7 +208,7 @@ function App() {
       ) : (
         <p className="text-3xl font-bold text-black">Select an ETF File to Continue</p>
       )}
-      <div className="relative inline-block pt-5">
+      <div className="relative inline-block pt-5 pb-5">
         <input
           type="file"
           accept='.csv'
@@ -217,7 +227,7 @@ function App() {
 
       {weightData.length ? (
         <div className="flex w-full pl-5 pr-5 pb-5">
-          <table className="table-auto">
+          <table className="table-auto w-120">
             <thead>
               <tr>
                 <th className="text-black border border-gray-600 px-2 py-2 text-center">Constituent</th>
@@ -228,9 +238,9 @@ function App() {
             <tbody>
               {weightData.map((row, index) => (
                 <tr key={index}>
-                  <td className="text-black border border-gray-600 px-2 py-2 text-center">{row.name}</td>
-                  <td className="text-black border border-gray-600 px-2 py-2 text-center">{row.weight}</td>
-                  <td className="text-black border border-gray-600 px-2 py-2 text-center">{timeData.data.at(-2)[row.name]}</td>
+                  <td className="text-black border border-gray-600 px-4 py-2 text-center">{row.name}</td>
+                  <td className="text-black border border-gray-600 px-4 py-2 text-center">{row.weight}</td>
+                  <td className="text-black border border-gray-600 px-4 py-2 text-center">{timeData.data.at(-2)[row.name]}</td>
                 </tr>
               ))}
             </tbody>
@@ -241,11 +251,23 @@ function App() {
               options = {lineChartOptions}
               ref={lineRef}>
             </Line>
-            <button onClick = {handleResetZoom} 
-            className="px-2 py-2 mt-5 mb-5 cursor-pointer text-black hover:text-teal-600 
-            border-2 hover:border-teal-600 transition-all duration-200 ease-in-out rounded-full">
-              Reset Zoom
-            </button>
+            <div className="flex w-120 justify-between items-center">
+              <button onClick = {() => handleZoom('in')} 
+              className="w-30 py-2 mt-5 mb-5 cursor-pointer text-black hover:text-teal-600 
+              border-2 hover:border-teal-600 transition-all duration-200 ease-in-out rounded-full">
+                Zoom In
+              </button>
+              <button onClick = {() => handleZoom('out')} 
+              className="w-30 py-2 mt-5 mb-5 cursor-pointer text-black hover:text-teal-600 
+              border-2 hover:border-teal-600 transition-all duration-200 ease-in-out rounded-full">
+                Zoom out
+              </button>
+              <button onClick = {handleResetZoom} 
+              className="w-30 py-2 mt-5 mb-5 cursor-pointer text-black hover:text-teal-600 
+              border-2 hover:border-teal-600 transition-all duration-200 ease-in-out rounded-full">
+                Reset Zoom
+              </button>
+            </div>
             <Bar
               data = {barChartData}
               options = {barChartOptions}>
