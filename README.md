@@ -3,7 +3,7 @@
 This is an ETF price monitor application that displays key infortmation of a given ETF. \
 It has a simple UI that initially prompts the user to upload a CSV file, and then displays the following: 
 - Table with each constituents name, weight, and final closing price
-- Zoomable line chart displaying the reconstructed ETF price over time (with a button to reset the chart)
+- Zoomable line chart displaying the reconstructed ETF price over time (with additional buttons to zoom in/out and reset)
 - Bar graph displaying the top 5 holdings and their worth 
 
 Hovering over data in either graph will also display the exact price value. 
